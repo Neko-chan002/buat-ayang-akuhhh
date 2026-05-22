@@ -212,6 +212,7 @@
 
             function pauseAudio() {
                 audio.pause();
+                audio.currentTime = 0; // Reset ke awal agar musik mengulang dari awal saat dinyalakan kembali
                 localStorage.setItem(BGM_PLAYING_KEY, 'false');
                 widget.classList.remove('playing');
                 widget.querySelector('.music-label').textContent = 'Musik • OFF';
