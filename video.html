@@ -357,6 +357,9 @@
         const overlay = document.getElementById('cinematic-overlay');
         const container = document.querySelector('.video-container');
 
+        // Flag untuk menandai apakah video sudah mulai diputar setidaknya sekali
+        let hasStartedPlaying = false;
+
         // Otomatis matikan BGM saat halaman video dibuka
         window.parent.postMessage({ type: 'pause' }, '*');
 
@@ -383,7 +386,22 @@
 
         // Pastikan BGM tetap mati saat video diputar
         video.addEventListener('play', () => {
+            hasStartedPlaying = true;
             window.parent.postMessage({ type: 'pause' }, '*');
+        });
+
+        // Nyalakan kembali BGM saat video dijeda (paused) oleh user
+        video.addEventListener('pause', () => {
+            if (hasStartedPlaying) {
+                window.parent.postMessage({ type: 'play' }, '*');
+            }
+        });
+
+        // Nyalakan kembali BGM saat video selesai diputar (ended)
+        video.addEventListener('ended', () => {
+            if (hasStartedPlaying) {
+                window.parent.postMessage({ type: 'play' }, '*');
+            }
         });
 
         // Nyalakan kembali BGM hanya ketika user keluar dari halaman video (Kembali ke dashboard)

@@ -72,7 +72,6 @@
             // Configuration & BGM Source
             const BGM_URL = 'Andmesh Kamelang - Cinta Luar Biasa (Speed Up  Lyrics).mp3';
             const BGM_PLAYING_KEY = 'bgm_playing';
-            const BGM_TIME_KEY = 'bgm_time';
 
             // Audio Setup
             let audio = new Audio(BGM_URL);
@@ -80,18 +79,8 @@
             audio.volume = 0.5; // Soft romance volume
             window.bgmAudio = audio;
 
-            // Load saved time
-            const savedTime = parseFloat(localStorage.getItem(BGM_TIME_KEY) || '0');
-            if (savedTime > 0) {
-                audio.currentTime = savedTime;
-            }
-
-            // Save playback position periodically
-            setInterval(() => {
-                if (audio && !audio.paused) {
-                    localStorage.setItem(BGM_TIME_KEY, audio.currentTime.toString());
-                }
-            }, 500);
+            // Bersihkan data posisi pemutaran lama jika ada
+            localStorage.removeItem('bgm_time');
 
             // Inject CSS Styles for Floating Player Widget
             const style = document.createElement('style');
