@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animasi Pohon Senja Romantis</title>
+    <script src="music.js"></script>
+    <!-- Menambahkan Google Font untuk tulisan romantis -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #2b1b3d; /* Warna dasar senja */
+        }
+        canvas {
+            display: block;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* Styling Kotak Pesan */
+        #pesanBox {
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            background: rgba(30, 15, 25, 0.6); /* Warna gelap keunguan transparan */
+            backdrop-filter: blur(8px); /* Efek kaca blur */
+            -webkit-backdrop-filter: blur(8px);
+            padding: 20px 25px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 223, 128, 0.2);
+            color: #ffdf80;
+            font-family: 'Dancing Script', cursive;
+            font-size: 24px;
+            line-height: 1.5;
+            max-width: 350px;
+            opacity: 0; /* Awalnya tidak terlihat */
+            pointer-events: none; /* Supaya klik tidak terganggu */
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+            z-index: 10;
+        }
+
+        /* Responsif agar rapi di layar HP */
+        @media (max-width: 600px) {
+            #pesanBox {
+                bottom: 20px;
+                left: 20px;
+                right: 20px;
+                max-width: auto;
+                font-size: 20px;
+            }
+        }
+
+        /* --- TENTANG TOMBOL KEMBALI ESTETIK --- */
+        .back-btn {
+            position: absolute;
+            top: 24px;
+            left: 24px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: rgba(43, 27, 61, 0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 223, 128, 0.25);
+            border-radius: 30px;
+            color: #ffdf80;
+            text-decoration: none;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .back-btn:hover {
+            background: rgba(43, 27, 61, 0.7);
+            transform: translateX(-4px);
+            border-color: #ffdf80;
+            box-shadow: 0 6px 20px rgba(255, 223, 128, 0.35);
+        }
+        .back-btn svg {
+            transition: transform 0.3s ease;
+        }
+        .back-btn:hover svg {
+            transform: translateX(-2px);
+        }
+        @media (max-width: 768px) {
+            .back-btn {
+                top: 16px;
+                left: 16px;
+                padding: 8px 14px;
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Tombol Kembali Estetik -->
+    <a href="masuk.html" class="back-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        <span>Kembali</span>
+    </a>
+
+    <!-- Elemen Kotak Pesan -->
+    <div id="pesanBox">
+        Senja mungkin perlahan berganti malam,<br>
+        tapi cintaku dan doa untuk bahagiamu nggak akan pernah padam.<br><br>
+        Selamat bertambah usia, Sayang... 🤍
+    </div>
+
+    <canvas id="animasiCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('animasiCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let width, height;
+        let hillPeakY; 
+
+        // State animasi pohon
+        let activeBranches = [];
+        let completedBranches = [];
+        let flowers = [];
+        let treeCompleted = false;
+        let bloomProgress = 0;
+        let peopleOpacity = 0;
+        let textOpacity = 0; 
+        
+        // Elemen lingkungan senja
+        let grasses = [];
+        let fireflies = [];
+        let stars = [];
+        let clouds = [];
+        let birds = [];
+
+        const MAX_DEPTH = 7;
+
+        function init() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+            
+            hillPeakY = height - (height * 0.25);
+
+            // Reset state
+            activeBranches = [];
+            completedBranches = [];
+            flowers = [];
+            grasses = [];
+            fireflies = [];
+            stars = [];
+            clouds = [];
+            birds = [];
+            treeCompleted = false;
+            bloomProgress = 0;
+            peopleOpacity = 0;
+            textOpacity = 0; 
+
+            // Reset opacity kotak pesan saat awal dimuat
+            document.getElementById('pesanBox').style.opacity = 0;
+
+            // Generate Rumput
+            for(let i=0; i<200; i++) {
+                let x = Math.random() * width;
+                let base_y = getHillY(x);
+                let y = base_y + Math.random() * (height - base_y);
+                let h = 5 + Math.random() * 12;
+                grasses.push({x: x, y: y, h: h, swayOffset: Math.random() * Math.PI * 2});
+            }
+
+            // Generate Kunang-kunang
+            for(let i=0; i<35; i++) {
+                fireflies.push({
+                    x: Math.random() * width,
+                    y: (hillPeakY - 50) + Math.random() * (height - hillPeakY + 50),
+                    vx: (Math.random() - 0.5) * 1.5,
+                    vy: (Math.random() - 0.5) * 1.5,
+                    size: Math.random() * 1.5 + 1,
+                    phase: Math.random() * Math.PI * 2
+                });
+            }
+
+            // Generate Bintang (Diem aja, ditambah jumlahnya agar makin estetik)
+            for (let i = 0; i < 80; i++) {
+                stars.push({
+                    x: Math.random() * width,
+                    y: Math.random() * (hillPeakY - 80),
+                    size: Math.random() * 1.3 + 0.5,
+                    opacity: Math.random() * 0.7 + 0.3
+                });
+            }
+
+            // Generate Awan Hitam (Diem aja, disesuaikan)
+            const cloudCount = 6;
+            for (let i = 0; i < cloudCount; i++) {
+                clouds.push({
+                    x: Math.random() * width,
+                    y: 40 + Math.random() * (hillPeakY - 220),
+                    scale: Math.random() * 0.7 + 0.5,
+                    opacity: Math.random() * 0.16 + 0.1
+                });
+            }
+
+            // Generate Burung (Bergerak, ditambah keaktifannya)
+            for (let i = 0; i < 6; i++) {
+                birds.push({
+                    x: Math.random() * width,
+                    y: 40 + Math.random() * 150,
+                    vx: - (0.6 + Math.random() * 0.9), // Terbang ke kiri
+                    vy: (Math.random() - 0.5) * 0.2,
+                    size: Math.random() * 5 + 5,
+                    wingPhase: Math.random() * Math.PI * 2,
+                    wingSpeed: 0.08 + Math.random() * 0.04
+                });
+            }
+
+            // Memulai cabang pertama
+            activeBranches.push(createBranch(width / 2, hillPeakY + 10, -Math.PI / 2, height * 0.2, 0, 18));
+        }
+
+        function getHillY(x) {
+            let t = x / width;
+            let y0 = height - height * 0.15;
+            let y1 = hillPeakY - 50;
+            let y2 = height - height * 0.15;
+            return Math.pow(1-t, 2) * y0 + 2 * (1-t) * t * y1 + Math.pow(t, 2) * y2;
+        }
+
+        function createBranch(x, y, angle, targetLength, depth, width) {
+            return {
+                x: x,
+                y: y,
+                angle: angle,
+                targetLength: targetLength,
+                currentLength: 0,
+                depth: depth,
+                width: width,
+                leaves: []
+            };
+        }
+
+        function drawEnvironment() {
+            // Langit Senja (Sunset Gradient)
+            let gradient = ctx.createLinearGradient(0, 0, 0, height);
+            gradient.addColorStop(0, "#2b1b3d"); // Ungu tua di atas
+            gradient.addColorStop(0.4, "#984065"); // Merah muda/Magenta
+            gradient.addColorStop(0.7, "#e67a53"); // Oranye
+            gradient.addColorStop(1, "#ffc872"); // Kuning senja di cakrawala
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, width, height);
+
+            // Gambar Matahari Terbenam
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(width * 0.75, hillPeakY - 80, 50, 0, Math.PI * 2);
+            ctx.fillStyle = "rgba(255, 230, 100, 0.9)";
+            ctx.shadowBlur = 50;
+            ctx.shadowColor = "#ffaa00";
+            ctx.fill();
+            ctx.restore();
+
+            // Bukit Gelap (Silhouette Hangat)
+            ctx.fillStyle = "#2e1c12";
+            ctx.beginPath();
+            ctx.moveTo(0, height);
+            ctx.lineTo(0, height - height * 0.15);
+            ctx.quadraticCurveTo(width / 2, hillPeakY - 50, width, height - height * 0.15);
+            ctx.lineTo(width, height);
+            ctx.closePath();
+            ctx.fill();
+
+            // Rumput Gelap
+            ctx.strokeStyle = '#1e1008';
+            ctx.lineWidth = 1.5;
+            ctx.lineCap = 'round';
+            let time = Date.now() * 0.003;
+            for(let g of grasses) {
+                ctx.beginPath();
+                ctx.moveTo(g.x, g.y);
+                let sway = Math.sin(time + g.swayOffset) * 4;
+                ctx.quadraticCurveTo(g.x + sway/2, g.y - g.h/2, g.x + sway, g.y - g.h);
+                ctx.stroke();
+            }
+        }
+
+        function drawStars() {
+            ctx.save();
+            for (let star of stars) {
+                ctx.fillStyle = `rgba(255, 255, 230, ${star.opacity})`;
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            ctx.restore();
+        }
+
+        function drawCloud(cx, cy, scale, opacity) {
+            ctx.save();
+            ctx.fillStyle = `rgba(15, 10, 20, ${opacity})`; // Deep dark purple/black twilight cloud
+            ctx.beginPath();
+            ctx.arc(cx, cy, 30 * scale, 0, Math.PI * 2);
+            ctx.arc(cx - 25 * scale, cy + 5 * scale, 20 * scale, 0, Math.PI * 2);
+            ctx.arc(cx + 25 * scale, cy + 5 * scale, 20 * scale, 0, Math.PI * 2);
+            ctx.arc(cx - 12 * scale, cy - 15 * scale, 22 * scale, 0, Math.PI * 2);
+            ctx.arc(cx + 12 * scale, cy - 15 * scale, 22 * scale, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function drawClouds() {
+            for (let cloud of clouds) {
+                drawCloud(cloud.x, cloud.y, cloud.scale, cloud.opacity);
+            }
+        }
+
+        function drawBirds() {
+            ctx.save();
+            ctx.strokeStyle = "rgba(20, 15, 25, 0.8)"; // Silhouette dark birds
+            ctx.lineWidth = 1.5;
+            ctx.lineCap = "round";
+            ctx.lineJoin = "round";
+
+            for (let bird of birds) {
+                // Update position
+                bird.x += bird.vx;
+                bird.y += bird.vy;
+                bird.wingPhase += bird.wingSpeed;
+
+                // Wrap around
+                if (bird.x < -50) {
+                    bird.x = width + 50;
+                    bird.y = 40 + Math.random() * 150;
+                }
+                if (bird.y < 0 || bird.y > hillPeakY - 100) {
+                    bird.vy *= -1;
+                }
+
+                // Draw V-bird silhouette
+                let wingY = Math.sin(bird.wingPhase) * (bird.size * 0.6);
+                ctx.beginPath();
+                // Left wing
+                ctx.moveTo(bird.x - bird.size, bird.y + wingY);
+                ctx.quadraticCurveTo(bird.x - bird.size * 0.5, bird.y - bird.size * 0.2, bird.x, bird.y);
+                // Right wing
+                ctx.quadraticCurveTo(bird.x + bird.size * 0.5, bird.y - bird.size * 0.2, bird.x + bird.size, bird.y + wingY);
+                ctx.stroke();
+            }
+            ctx.restore();
+        }
+
+        function drawFireflies() {
+            let time = Date.now() * 0.002;
+            for(let f of fireflies) {
+                f.x += f.vx + Math.cos(time + f.phase) * 0.5;
+                f.y += f.vy + Math.sin(time + f.phase) * 0.5;
+
+                if(f.x > width + 20) f.x = -20;
+                else if(f.x < -20) f.x = width + 20;
+                if(f.y > height) f.vy *= -1;
+                else if(f.y < hillPeakY - 150) f.vy *= -1;
+
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(f.x, f.y, f.size, 0, Math.PI * 2);
+                
+                let glowAlpha = Math.abs(Math.sin(time * 2 + f.phase)) * 0.8 + 0.2;
+                ctx.fillStyle = `rgba(200, 255, 50, ${glowAlpha})`;
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = '#c8ff32';
+                
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        function drawLeaf(x, y, angle, scale, colorVar) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(angle);
+            ctx.scale(scale, scale);
+            let g = 30 + colorVar / 2; 
+            ctx.fillStyle = `rgb(40, ${g}, 20)`;
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.quadraticCurveTo(10, -10, 20, 0);
+            ctx.quadraticCurveTo(10, 10, 0, 0);
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function drawBranch(b) {
+            ctx.beginPath();
+            ctx.moveTo(b.x, b.y);
+            let endX = b.x + Math.cos(b.angle) * b.currentLength;
+            let endY = b.y + Math.sin(b.angle) * b.currentLength;
+            ctx.lineTo(endX, endY);
+            ctx.strokeStyle = '#221510'; 
+            ctx.lineWidth = b.width;
+            ctx.lineCap = 'round';
+            ctx.stroke();
+
+            if (b.leaves.length > 0) {
+                for (let leaf of b.leaves) {
+                    drawLeaf(leaf.x, leaf.y, leaf.angle, leaf.scale, leaf.colorVar);
+                }
+            }
+        }
+
+        function drawFlower(x, y, scale) {
+            if (scale <= 0) return;
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.scale(scale, scale);
+            ctx.globalAlpha = Math.min(1, scale * 1.5);
+            
+            // Mengurangi radius blur bayangan agar performa rendering jauh lebih ringan dan bebas lag
+            ctx.shadowBlur = 2;
+            ctx.shadowColor = '#00BFFF';
+            ctx.fillStyle = '#00BFFF'; 
+            
+            for(let i = 0; i < 5; i++) {
+                ctx.rotate((Math.PI * 2) / 5);
+                ctx.beginPath();
+                ctx.ellipse(0, 6, 4, 10, 0, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            ctx.shadowBlur = 0; 
+            ctx.fillStyle = '#FFD700'; 
+            ctx.beginPath();
+            ctx.arc(0, 0, 3, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function drawPeople(opacity) {
+            if (opacity <= 0) return;
+            let base_y = hillPeakY + 5;
+            let center_x = width / 2;
+
+            ctx.save();
+            ctx.globalAlpha = opacity;
+
+            // --- Meja ---
+            let tx = center_x + 25; 
+            let tw = 40; 
+            let th = 22; 
+            ctx.fillStyle = '#1a100b'; 
+            ctx.fillRect(tx, base_y - th, tw, 4); 
+            ctx.fillRect(tx + 5, base_y - th, 4, th); 
+            ctx.fillRect(tx + tw - 9, base_y - th, 4, th); 
+
+            // --- Kue di Atas Meja ---
+            let cx = tx + tw / 2;
+            let cy = base_y - th;
+            ctx.fillStyle = '#999'; 
+            ctx.beginPath(); ctx.ellipse(cx, cy, 14, 3, 0, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = '#c77281'; 
+            ctx.fillRect(cx - 10, cy - 14, 20, 14);
+            ctx.fillStyle = '#aaa'; 
+            ctx.fillRect(cx - 10, cy - 14, 20, 5);
+            ctx.fillStyle = '#ddd'; 
+            ctx.fillRect(cx - 1.5, cy - 24, 3, 10);
+            
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = '#ffea00';
+            ctx.fillStyle = '#ffaa00'; 
+            ctx.beginPath(); ctx.arc(cx, cy - 27, 3, 0, Math.PI*2); ctx.fill();
+            if (Math.random() > 0.5) {
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath(); ctx.arc(cx, cy - 27, 1.5, 0, Math.PI*2); ctx.fill();
+            }
+            ctx.shadowBlur = 0; 
+
+            // --- Kursi ---
+            let ch_x = tx + tw + 18;
+            ctx.fillStyle = '#1a100b';
+            ctx.fillRect(ch_x - 12, base_y - 14, 24, 4); 
+            ctx.fillRect(ch_x - 10, base_y - 14, 4, 14); 
+            ctx.fillRect(ch_x + 6, base_y - 14, 4, 14); 
+            ctx.fillRect(ch_x + 6, base_y - 32, 4, 18); 
+
+            // Siluet orang
+            ctx.fillStyle = '#0a0a0a';
+            ctx.strokeStyle = '#0a0a0a';
+            ctx.lineWidth = 3.5;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            // --- Cewek (Duduk) ---
+            let gx = ch_x;
+            ctx.beginPath(); ctx.arc(gx - 4, base_y - 40, 6.5, 0, Math.PI*2); ctx.fill(); 
+            ctx.beginPath();
+            ctx.moveTo(gx - 2, base_y - 34); 
+            ctx.lineTo(gx + 6, base_y - 14); 
+            ctx.lineTo(gx - 16, base_y - 14); 
+            ctx.closePath();
+            ctx.fill();
+            ctx.beginPath(); ctx.moveTo(gx - 12, base_y - 14); ctx.lineTo(gx - 12, base_y); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(gx - 7, base_y - 14); ctx.lineTo(gx - 7, base_y); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(gx - 2, base_y - 32); ctx.lineTo(gx - 10, base_y - 25); ctx.lineTo(tx + tw - 5, base_y - th - 4); ctx.stroke();
+
+            // --- Cowok (Bersandar) ---
+            let px = center_x - 15; 
+            ctx.beginPath(); ctx.arc(px - 3, base_y - 48, 7, 0, Math.PI*2); ctx.fill(); 
+            ctx.beginPath(); ctx.moveTo(px - 2, base_y - 41); ctx.lineTo(px + 4, base_y - 22); ctx.stroke(); 
+            ctx.beginPath(); ctx.moveTo(px + 4, base_y - 22); ctx.lineTo(px - 8, base_y); ctx.stroke(); 
+            ctx.beginPath(); ctx.moveTo(px + 4, base_y - 22); ctx.lineTo(px + 10, base_y - 10); ctx.lineTo(px + 10, base_y - 2); ctx.stroke(); 
+            ctx.beginPath(); ctx.moveTo(px - 1, base_y - 36); ctx.lineTo(px - 10, base_y - 30); ctx.lineTo(px + 2, base_y - 27); ctx.stroke();
+
+            ctx.restore();
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            drawEnvironment();
+            
+            // Panggil fungsi untuk menggambar bintang, awan hitam, dan burung bergerak di background
+            drawStars();
+            drawClouds();
+            drawBirds();
+
+            for (let b of completedBranches) {
+                drawBranch(b);
+            }
+
+            let newActive = [];
+            for (let b of activeBranches) {
+                drawBranch(b);
+                b.currentLength += b.targetLength * 0.05; 
+
+                if (b.currentLength >= b.targetLength) {
+                    b.currentLength = b.targetLength;
+                    
+                    if (b.depth >= 3 && b.width > 1) {
+                        let numLeaves = Math.floor(Math.random() * 4) + 1;
+                        for(let i=0; i<numLeaves; i++){
+                            let posRatio = Math.random() * 0.8 + 0.1;
+                            let leafBaseX = b.x + Math.cos(b.angle) * (b.currentLength * posRatio);
+                            let leafBaseY = b.y + Math.sin(b.angle) * (b.currentLength * posRatio);
+                            b.leaves.push({
+                                x: leafBaseX,
+                                y: leafBaseY,
+                                angle: b.angle + (Math.random() * Math.PI/2 - Math.PI/4),
+                                scale: Math.random() * 0.4 + 0.3,
+                                colorVar: Math.random() * 50
+                            });
+                        }
+                    }
+
+                    completedBranches.push(b);
+                    
+                    if (b.depth < MAX_DEPTH) {
+                        let endX = b.x + Math.cos(b.angle) * b.targetLength;
+                        let endY = b.y + Math.sin(b.angle) * b.targetLength;
+                        let randomAngle1 = 0.3 + Math.random() * 0.4; 
+                        let randomAngle2 = 0.3 + Math.random() * 0.4;
+                        let nextLength = b.targetLength * (0.75 + Math.random() * 0.1);
+                        let nextWidth = b.width * 0.7;
+                        
+                        if (b.depth < MAX_DEPTH - 2 && Math.random() > 0.7) {
+                             newActive.push(createBranch(endX, endY, b.angle + (Math.random()-0.5)*0.2, nextLength*1.1, b.depth + 1, nextWidth));
+                        }
+                        newActive.push(createBranch(endX, endY, b.angle - randomAngle1, nextLength, b.depth + 1, nextWidth));
+                        newActive.push(createBranch(endX, endY, b.angle + randomAngle2, nextLength, b.depth + 1, nextWidth));
+                    } else {
+                        // Bunga diletakkan HANYA di ujung-ujung ranting terluar (MAX_DEPTH)
+                        // Menggunakan probabilitas lebih tinggi (85%) agar rimbun dan cantik, namun tetap anti-lag karena optimasi shadowBlur
+                        if (Math.random() < 0.85) {
+                            let endX = b.x + Math.cos(b.angle) * b.targetLength;
+                            let endY = b.y + Math.sin(b.angle) * b.targetLength;
+                            
+                            // Menghitung jarak dari pusat percabangan awal untuk memastikan bunga berada di tajuk terluar
+                            let distFromBase = Math.hypot(endX - width / 2, endY - (hillPeakY - 100));
+                            
+                            // Menyesuaikan batas ketinggian dan jarak agar rimbun indah, tetapi tetap fokus di ujung ranting terluar
+                            if (endY < hillPeakY - 80 && distFromBase > height * 0.1) {
+                                flowers.push({x: endX, y: endY});
+                            }
+                        }
+                    }
+                } else {
+                    newActive.push(b);
+                }
+            }
+            activeBranches = newActive;
+
+            if (activeBranches.length === 0) {
+                if (!treeCompleted) {
+                    treeCompleted = true;
+                }
+                
+                if (bloomProgress < 1) bloomProgress += 0.006;
+                if (peopleOpacity < 1) peopleOpacity += 0.008;
+                if (textOpacity < 1) {
+                    textOpacity += 0.005; 
+                    // Tampilkan kotak pesan HTML secara perlahan
+                    document.getElementById('pesanBox').style.opacity = textOpacity;
+                }
+
+                for (let f of flowers) {
+                    let localScale = Math.max(0, bloomProgress * 1.5 - (f.x % 0.5) * 0.5);
+                    if (localScale > 1) localScale = 1;
+                    drawFlower(f.x, f.y, localScale);
+                }
+                drawPeople(peopleOpacity);
+            }
+
+            drawFireflies();
+            
+            // Perbaikan utama: Memanggil requestAnimationFrame agar animasi berjalan
+            requestAnimationFrame(animate); 
+        }
+
+        window.addEventListener('resize', () => {
+            init();
+        });
+
+        init();
+        animate();
+
+    </script>
+</body>
+</html>

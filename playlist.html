@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playlist Cinta Kita 🎵</title>
+    <script src="music.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Poppins:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,500;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-image: url('gambar/bg1.png');
+            background-size: 110%;
+            background-position: center;
+            background-attachment: fixed;
+            color: #111111;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding: 80px 20px;
+        }
+
+        /* Container Utama */
+        .playlist-container {
+            max-width: 950px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+            display: grid;
+            grid-template-columns: 1.1fr 1.3fr;
+            gap: 40px;
+            align-items: center;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeIn 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* --- SISI KIRI: PEMUTAR MUSIK & VINYL --- */
+        .player-side {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .vinyl-container {
+            position: relative;
+            width: 240px;
+            height: 240px;
+            margin-bottom: 25px;
+        }
+
+        /* Vinyl Record */
+        .vinyl {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle, #2c2c2c 30%, #0d0d0d 60%, #1a1a1a 80%);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 0 10px rgba(255, 255, 255, 0.1);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: spin 6s linear infinite;
+            animation-play-state: paused;
+            transition: transform 0.5s ease;
+        }
+
+        .vinyl::before {
+            content: '';
+            position: absolute;
+            width: 96%;
+            height: 96%;
+            border-radius: 50%;
+            border: 1px dashed rgba(255, 255, 255, 0.08);
+        }
+
+        /* Center Label (Sticker) */
+        .vinyl-center {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #A38068;
+            border: 4px solid #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 1.5rem;
+            z-index: 2;
+            overflow: hidden;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+        }
+        
+        .vinyl-center img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Center spindle hole */
+        .vinyl-hole {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ffffff;
+            z-index: 3;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Info Lagu Aktif */
+        .track-info {
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .track-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            font-weight: 500;
+            color: #352D28;
+            margin-bottom: 5px;
+            height: 38px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .track-artist {
+            font-size: 0.9rem;
+            color: #A38068;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+
+        /* Dedikasi / Catatan Cinta */
+        .track-dedication {
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(163, 128, 104, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            width: 100%;
+            min-height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.35rem;
+            line-height: 1.6;
+            color: #5a4b41;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            transition: all 0.5s ease;
+        }
+
+        /* --- SISI KANAN: DAFTAR LAGU --- */
+        .playlist-side {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .playlist-header {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: #352D28;
+            border-bottom: 2px solid rgba(163, 128, 104, 0.2);
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .track-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 380px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        /* Scrollbar Styling */
+        .track-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        .track-list::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.03);
+            border-radius: 10px;
+        }
+        .track-list::-webkit-scrollbar-thumb {
+            background: rgba(163, 128, 104, 0.3);
+            border-radius: 10px;
+        }
+
+        .track-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 18px;
+            background: rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .track-item:hover {
+            background: rgba(255, 255, 255, 0.8);
+            transform: translateX(5px);
+            border-color: rgba(163, 128, 104, 0.3);
+        }
+
+        .track-item.active {
+            background: rgba(163, 128, 104, 0.15);
+            border-color: rgba(163, 128, 104, 0.5);
+            box-shadow: 0 4px 15px rgba(163, 128, 104, 0.1);
+        }
+
+        .track-num {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #A38068;
+            width: 20px;
+        }
+
+        .track-item-info {
+            flex: 1;
+        }
+
+        .track-item-title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #352D28;
+        }
+
+        .track-item-artist {
+            font-size: 0.8rem;
+            color: #7A6F67;
+        }
+
+        .track-icon {
+            color: #A38068;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.5;
+            transition: opacity 0.3s ease;
+        }
+
+        .track-item.active .track-icon,
+        .track-item:hover .track-icon {
+            opacity: 1;
+        }
+
+        /* --- TOMBOL KEMBALI ESTETIK --- */
+        .back-btn {
+            position: fixed;
+            top: 24px;
+            left: 24px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(196, 164, 140, 0.4);
+            border-radius: 30px;
+            color: #A38068;
+            text-decoration: none;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.8);
+            transform: translateX(-4px);
+            border-color: #A38068;
+            color: #352D28;
+            box-shadow: 0 6px 20px rgba(196, 164, 140, 0.25);
+        }
+        .back-btn svg {
+            transition: transform 0.3s ease;
+        }
+        .back-btn:hover svg {
+            transform: translateX(-2px);
+        }
+
+        /* --- RESPONSIVE UNTUK HP --- */
+        @media screen and (max-width: 850px) {
+            body {
+                padding: 100px 15px 40px 15px;
+            }
+
+            .playlist-container {
+                grid-template-columns: 1fr;
+                padding: 30px 20px;
+                gap: 30px;
+            }
+
+            .vinyl-container {
+                width: 200px;
+                height: 200px;
+            }
+
+            .track-list {
+                max-height: 260px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Tombol Kembali Estetik -->
+    <a href="masuk.html" class="back-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        <span>Kembali</span>
+    </a>
+
+    <div class="playlist-container">
+        
+        <!-- Pemutar & Vinyl Aktif -->
+        <div class="player-side">
+            <div class="vinyl-container">
+                <div id="active-vinyl" class="vinyl">
+                    <div class="vinyl-center">
+                        <img id="vinyl-img" src="potobackgeoun/2.jpeg" alt="Cover">
+                    </div>
+                    <div class="vinyl-hole"></div>
+                </div>
+            </div>
+            
+            <div class="track-info">
+                <h3 id="active-title" class="track-title">Cinta Luar Biasa</h3>
+                <p id="active-artist" class="track-artist">Andmesh Kamelang</p>
+                <div id="active-dedication" class="track-dedication">
+                    "Lagu ini sedang mengalun manis menemani setiap langkahmu menyusuri web kejutan ini. Bagiku, cintamu sangat luar biasa, Sayang..." 🤍
+                </div>
+            </div>
+        </div>
+
+        <!-- Daftar Lagu -->
+        <div class="playlist-side">
+            <h2 class="playlist-header">Melodi Hati Kita 🎵</h2>
+            <div id="tracks" class="track-list">
+                <!-- Data lagu dirender oleh JS -->
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const songList = [
+            {
+                id: 1,
+                title: "Cinta Luar Biasa",
+                artist: "Andmesh Kamelang",
+                cover: "potobackgeoun/2.jpeg",
+                dedication: "“Lagu ini sedang mengalun manis menemani setiap langkahmu menyusuri web kejutan ini. Bagiku, cintamu sangat luar biasa dan melampaui kata-kata, Sayang...” 🤍"
+            },
+            {
+                id: 2,
+                title: "Sempurna",
+                artist: "Andra & The Backbone",
+                cover: "poto/12.jpeg",
+                dedication: "“Karena bagiku, tidak ada yang lebih sempurna di semesta ini selain saat-saat kita tertawa bersama. Kamu adalah bagian tercantik dari hidupku.” 🌸"
+            },
+            {
+                id: 3,
+                title: "Hingga Tua Bersama",
+                artist: "Rizky Febian",
+                cover: "poto/14.jpeg",
+                dedication: "“Sebuah janji tulus untuk selalu menggenggam erat tanganmu, melewati musim demi musim yang berganti, hingga rambut kita memutih bersama kelak.” 🕰️"
+            },
+            {
+                id: 4,
+                title: "Komang",
+                artist: "Raim Laode",
+                cover: "poto/1.jpeg",
+                dedication: "“Sebab kamu adalah komangku, keindahan paling murni yang sangat sulit dijabarkan oleh kata-kata, dan inspirasi paling indah dalam setiap hariku.” ✨"
+            },
+            {
+                id: 5,
+                title: "Penjaga Hati",
+                artist: "Nadhif Basalamah",
+                cover: "poto/16.jpeg",
+                dedication: "“Karena kamu adalah satu-satunya pelabuhan rasa terbaikku, dan orang yang paling ingin aku jaga hatinya selamanya, Cintaku...” 💫"
+            }
+        ];
+
+        const tracksContainer = document.getElementById('tracks');
+        const activeVinyl = document.getElementById('active-vinyl');
+        const vinylImg = document.getElementById('vinyl-img');
+        const activeTitle = document.getElementById('active-title');
+        const activeArtist = document.getElementById('active-artist');
+        const activeDedication = document.getElementById('active-dedication');
+
+        let currentActiveId = 1;
+
+        function renderTracks() {
+            tracksContainer.innerHTML = '';
+            songList.forEach((song) => {
+                const isActive = song.id === currentActiveId ? 'active' : '';
+                const playIcon = song.id === currentActiveId ? '⏸️' : '▶️';
+                
+                const html = `
+                    <div class="track-item ${isActive}" onclick="playTrack(${song.id})">
+                        <span class="track-num">${String(song.id).padStart(2, '0')}</span>
+                        <div class="track-item-info">
+                            <h4 class="track-item-title">${song.title}</h4>
+                            <p class="track-item-artist">${song.artist}</p>
+                        </div>
+                        <div class="track-icon">${playIcon}</div>
+                    </div>
+                `;
+                tracksContainer.insertAdjacentHTML('beforeend', html);
+            });
+        }
+
+        window.playTrack = function(id) {
+            currentActiveId = id;
+            const song = songList.find(s => s.id === id);
+            if (song) {
+                // Update tampilan pemutar
+                activeTitle.style.opacity = 0;
+                activeArtist.style.opacity = 0;
+                activeDedication.style.opacity = 0;
+                
+                setTimeout(() => {
+                    vinylImg.src = song.cover;
+                    activeTitle.textContent = song.title;
+                    activeArtist.textContent = song.artist;
+                    activeDedication.textContent = song.dedication;
+                    
+                    activeTitle.style.opacity = 1;
+                    activeArtist.style.opacity = 1;
+                    activeDedication.style.opacity = 1;
+                }, 300);
+
+                // Vinyl spin animation
+                activeVinyl.style.animationPlayState = 'running';
+                
+                renderTracks();
+            }
+        };
+
+        // Awal muat halaman
+        renderTracks();
+        // Jalankan animasi vinyl default
+        setTimeout(() => {
+            activeVinyl.style.animationPlayState = 'running';
+        }, 500);
+    </script>
+</body>
+</html>

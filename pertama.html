@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selamat Ulang Tahun Sayang</title>
+    <script src="music.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            /* Tambahkan link gambar background kamu di sini */
+            background-image: url('gambar/latar.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed; 
+            
+            color: #111111;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Kontainer Utama */
+        .portfolio-card {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5rem; 
+            width: 90%;
+            max-width: 1100px; 
+            padding: 2rem;
+        }
+
+        /* --- ANIMASI KEYFRAMES BARU YANG LEBIH DINAMIS --- */
+        
+        /* 1. Animasi Foto: Masuk dari kiri + sedikit membesar (Zoom-in & Slide) */
+        @keyframes revealPhoto {
+            0% {
+                opacity: 0;
+                transform: translateX(-60px) scale(0.95);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+
+        /* 2. Animasi Judul/Nama: Naik perlahan dengan ayunan sangat lembut */
+        @keyframes smoothSlideUp {
+            0% {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 3. Animasi Bio: Hanya muncul perlahan tanpa pergeseran agar elegan */
+        @keyframes softFadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        /* Bagian Foto */
+        .photo-box {
+            width: 380px; 
+            height: 380px;
+            flex-shrink: 0;
+            box-shadow: 15px 15px 0px #EBE3D5; 
+            
+            /* Animasi dimulai seketika (0s delay), durasi 2 detik */
+            opacity: 0;
+            animation: revealPhoto 2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+
+        .photo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Bagian Teks */
+        .info-box {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-width: 500px; 
+        }
+
+        /* Tulisan Happy Birthday */
+        .happy-birthday {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: #B5935B; 
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+            
+            /* Delay 0.8s, menunggu foto hampir selesai muncul */
+            opacity: 0;
+            animation: smoothSlideUp 1.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.8s forwards;
+        }
+
+        /* Nama */
+        .name {
+            font-family: 'Playfair Display', serif; 
+            font-size: 3.5rem;
+            font-weight: 600;
+            line-height: 1.1;
+            margin-bottom: 0.5rem;
+            color: #6B2D37; 
+            
+            /* Delay 1.2s */
+            opacity: 0;
+            animation: smoothSlideUp 1.8s cubic-bezier(0.2, 0.8, 0.2, 1) 1.2s forwards;
+        }
+
+        /* Peran / Subjudul */
+        .role {
+            font-size: 0.9rem;
+            font-style: italic;
+            font-family: 'Playfair Display', serif;
+            color: #B5935B;
+            margin-bottom: 2rem;
+            letter-spacing: 1px;
+            
+            /* Delay 1.6s */
+            opacity: 0;
+            animation: smoothSlideUp 1.8s cubic-bezier(0.2, 0.8, 0.2, 1) 1.6s forwards;
+        }
+
+        /* Bio */
+        .bio {
+            font-size: 1rem;
+            line-height: 1.8;
+            color: #4A403E; 
+            font-weight: 300;
+            margin-bottom: 2.5rem;
+            
+            /* Menggunakan Fade In perlahan, delay 2.2s */
+            opacity: 0;
+            animation: softFadeIn 2.5s ease-in-out 2.2s forwards;
+        }
+
+        /* Tautan */
+        .links {
+            display: flex;
+            gap: 2rem;
+            
+            /* Delay 3s, muncul paling terakhir setelah semua selesai */
+            opacity: 0;
+            animation: smoothSlideUp 1.8s cubic-bezier(0.2, 0.8, 0.2, 1) 3s forwards;
+        }
+
+        .links a {
+            text-decoration: none;
+            color: #6B2D37; 
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-bottom: 1px solid #6B2D37;
+            padding-bottom: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .links a:hover {
+            color: #B5935B; 
+            border-bottom-color: #B5935B;
+        }
+
+        /* Responsif untuk Layar Handphone */
+        @media (max-width: 900px) {
+            .portfolio-card {
+                flex-direction: column;
+                text-align: left;
+                gap: 3rem;
+                padding: 4rem 2rem;
+            }
+            .photo-box {
+                width: 300px;
+                height: 300px;
+                box-shadow: 10px 10px 0px #EBE3D5;
+            }
+            .name {
+                font-size: 2.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="portfolio-card">
+        <!-- POTO SEBELAH KIRI -->
+        <div class="photo-box">
+            <!-- Silakan ganti dengan foto Haura -->
+            <img src="gambar/kue biru.png" alt="Potret Haura">
+        </div>
+
+        <!-- KONTEN SEBELAH KANAN -->
+        <div class="info-box">
+            <span class="happy-birthday">Selamat Ulang Tahun Sayang,</span>
+            <h1 class="name">Haura Hasna<br>Dewi Hanifah.</h1>
+            <p class="role">Bab Baru • Lembar yang Bahagia | 23-05-2003</p>
+            <p class="bio">
+                Di antara jutaan kata dalam kamus dan bait-bait puisi yang pernah tercipta, tidak ada yang lebih puitis dari keberadaanmu, Sayang. Selamat bertambah usia, cintaku. Semoga semesta senantiasa berbaik hati padamu, dan tawa serta bahagiamu selalu menemukan jalan pulang ke pelukanku. Teruslah mekar menjadi sajak terindah dalam hidupku.
+            </p>
+            <div class="links">
+                <a href="masuk.html">Sebuah Pesan</a>
+                <a href="doa.html">Do'a dan Harapan</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

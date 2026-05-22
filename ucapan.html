@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ucapan Ulang Tahun Estetik</title>
+    <script src="music.js"></script>
+    <!-- Import font estetik dari Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Reset Dasar */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+         body {
+            /* Tambahkan link gambar background kamu di sini */
+            background-image: url('gambar/bg1.png');
+            background-size: 110%;
+            background-position: center;
+            background-attachment: fixed; 
+            
+            color: #111111;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- DEFINISI ANIMASI MASUK (FADE UP) --- */
+        @keyframes fadeUpSmooth {
+            0% {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Pengaturan Section */
+        .greetings-section {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 80px 20px;
+        }
+
+        .greetings-container {
+            max-width: 1000px;
+            display: flex;
+            align-items: flex-start; 
+            gap: 50px; 
+        }
+
+        /* --- BAGIAN FOTO & EFEK BINGKAI ESTETIK --- */
+        .image-wrapper {
+            flex: 1;
+            position: relative;
+            margin-bottom: 30px;
+            
+            /* Setting Animasi Foto */
+            opacity: 0; /* Mulai dari transparan */
+            animation: fadeUpSmooth 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            animation-delay: 0.2s; /* Muncul paling pertama */
+        }
+
+        .image-wrapper img {
+            width: 100%;
+            max-width: 420px;
+            height: auto;
+            border-radius: 4px;
+            object-fit: cover;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+            transition: transform 0.6s ease; /* Hover lebih lambat sedikit */
+        }
+
+        /* Bingkai estetik di belakang foto */
+        .image-wrapper::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 100%;
+            height: 100%;
+            max-width: 420px;
+            border: 1.5px solid #C4A48C;
+            z-index: 1;
+            border-radius: 4px;
+            transition: all 0.6s ease;
+        }
+
+        .image-wrapper:hover img {
+            transform: translate(-5px, -5px);
+        }
+
+        .image-wrapper:hover::after {
+            top: 25px;
+            left: 25px;
+            border-color: #A38068;
+        }
+
+        /* --- BAGIAN TEKS --- */
+        .text-wrapper {
+            flex: 1.2; 
+            padding-top: 10px; 
+        }
+
+        .section-label {
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.85rem;
+            letter-spacing: 4px; 
+            color: #C4A48C;
+            text-transform: uppercase;
+            font-weight: 500;
+            display: block;
+            margin-bottom: 20px;
+
+            /* Setting Animasi Label */
+            opacity: 0;
+            animation: fadeUpSmooth 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            animation-delay: 0.6s; /* Muncul setelah foto */
+        }
+
+        .title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8rem;
+            line-height: 1.1;
+            margin-bottom: 35px;
+            color: #352D28;
+
+            /* Setting Animasi Judul */
+            opacity: 0;
+            animation: fadeUpSmooth 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            animation-delay: 0.9s; /* Muncul setelah label */
+        }
+
+        .greeting-highlight {
+            font-family: 'Great Vibes', cursive;
+            font-size: 4.5rem;
+            color: #A38068;
+            font-weight: 400;
+            display: block;
+            margin-bottom: -15px; 
+        }
+
+        /* --- STYLING TULISAN PANJANG --- */
+        .message-body {
+            border-left: 2px solid #E6D8CE;
+            padding-left: 25px;
+
+            /* Setting Animasi Paragraf */
+            opacity: 0;
+            animation: fadeUpSmooth 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            animation-delay: 1.2s; /* Muncul paling terakhir */
+        }
+
+        .message-body p {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.05rem;
+            line-height: 2; 
+            margin-bottom: 20px;
+            color: #7A6F67; 
+            text-align: justify; 
+            font-weight: 300;
+        }
+
+        .message-body p:last-child {
+            margin-bottom: 0;
+        }
+
+        .message-body em {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            color: #A38068;
+            font-size: 1.1rem;
+        }
+
+        /* --- RESPONSIVE UNTUK HP --- */
+        @media screen and (max-width: 768px) {
+            .greetings-section {
+                padding: 40px 20px;
+            }
+
+            .greetings-container {
+                flex-direction: column;
+                align-items: center;
+                gap: 40px; 
+            }
+
+            .image-wrapper {
+                margin-bottom: 10px;
+            }
+
+            .image-wrapper::after {
+                top: 15px;
+                left: 15px;
+            }
+
+            .text-wrapper {
+                padding-top: 0;
+                text-align: center; 
+            }
+
+            .greeting-highlight {
+                font-size: 4rem;
+            }
+
+            .title {
+                font-size: 2.2rem;
+            }
+
+            .message-body {
+                border-left: none;
+                border-top: 1.5px solid #E6D8CE;
+                padding-left: 0;
+                padding-top: 25px;
+            }
+
+            .message-body p {
+                text-align: center; 
+            }
+        }
+
+        /* --- TENTANG TOMBOL KEMBALI ESTETIK --- */
+        .back-btn {
+            position: fixed;
+            top: 24px;
+            left: 24px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(196, 164, 140, 0.4);
+            border-radius: 30px;
+            color: #A38068;
+            text-decoration: none;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.8);
+            transform: translateX(-4px);
+            border-color: #A38068;
+            color: #352D28;
+            box-shadow: 0 6px 20px rgba(196, 164, 140, 0.25);
+        }
+        .back-btn svg {
+            transition: transform 0.3s ease;
+        }
+        .back-btn:hover svg {
+            transform: translateX(-2px);
+        }
+        @media (max-width: 768px) {
+            .back-btn {
+                top: 16px;
+                left: 16px;
+                padding: 8px 14px;
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Tombol Kembali Estetik -->
+    <a href="masuk.html" class="back-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        <span>Kembali</span>
+    </a>
+
+    <section class="greetings-section">
+        <div class="greetings-container">
+            
+            <!-- Bagian Foto -->
+            <div class="image-wrapper">
+                <img src="potobackgeoun/2.jpeg" alt="Foto Ulang Tahun">
+            </div>
+
+            <!-- Bagian Teks Ucapan -->
+            <div class="text-wrapper">
+                <span class="section-label">✦ Chapter 2 ✦</span>
+                
+                <h2 class="title">
+                    <span class="greeting-highlight">Selamat Ulang Tahun,</span>
+                    Sayangku!
+                </h2>
+                
+                <div class="message-body">
+                    <p>Selamat bertambah usia ya, Sayangku! Semoga di babak baru kehidupanmu ini, hari-harimu selalu dipenuhi tawa, cinta yang kian hangat, dan segala kebaikan manis yang selalu mengiringi setiap langkah kita bersama.</p>
+                    <p>Terima kasih ya sudah menjadi bagian terindah dalam hidupku, berjuang dan menemaniku dengan sabar selama ini. Hari ini adalah harimu seutuhnya, cintaku. Aku berjanji akan selalu ada di sampingmu untuk merayakan setiap hari ulang tahunmu selanjutnya. <em>I love you so much, Sayang. Have a wonderful birthday!</em> 💖</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+</body>
+</html>
